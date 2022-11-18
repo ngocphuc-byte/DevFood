@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons'
 import Icon2 from 'react-native-vector-icons/Ionicons'
 import {useSelector, useDispatch} from 'react-redux'
 import { black, greendark, greenlight, white, yellow } from "../Style/colors";
-import { getCart, getFood, getTotal, getIdVoucher, onHandlerUpdateQuantityDown, onHandlerUpdateQuantityUp, getVoucher, RemoveItemCart, updateTotal } from "../API/Cart";
+import { getCart, getFood, getTotal, getIdVoucher, onHandlerUpdateQuantityDown, onHandlerUpdateQuantityUp, getVoucher, RemoveItemCart, updateTotal, checkVoucher } from "../API/Cart";
 import { Card, Modal } from "react-native-paper";
 import { UpdateCart, RemoveItem } from "../../Redux/Actions/CartAction";
 import  {Swipeable, GestureHandlerRootView}  from "react-native-gesture-handler";
@@ -137,20 +137,47 @@ const renderFood = (item,index, setTotal, total, idAccount) => {
 //         )
 //     )
 // }
-const NameVoucher = ({item, setDataVoucher,setApply ,setVisible, total}) => {
+const NameVoucher = ({item, setDataVoucher,setApply ,setVisible, total, onHandlerRefresh, setIdDetailVoucher}) => {
     const [voucher, setVoucher] = useState([]);
     useEffect(()=>{
         getVoucher(item.id_Voucher, setVoucher)
-        // console.log(total)
+        setIdDetailVoucher(item._id);
     },[])
     const onHandlerSaveVoucher = () => {
-        if(voucher.minprice <= total) {
-            setDataVoucher(item._id);
-            setApply(voucher.discount);
-            setVisible(false);
-        } else {
-            Alert.alert('WARNING','Bạn không đủ điều kiện sử dụng voucher của chúng tôi !')
-        }
+        
+        fetch('http://10.0.2.2:3000/Cart/checkVoucher', {
+            method : 'POST',
+            headers : {
+                'Content-Type' : 'application/json',
+            },
+            body : JSON.stringify({
+                _id : item._id,
+            })
+        })
+        .then(res=>res.json())
+        .then(res=>{
+            if(res.length > 0) {
+                if(voucher.minprice <= total) {
+                    setDataVoucher(item._id);
+                    setApply(voucher.discount);
+                    setVisible(false);
+                } else {
+                    Alert.alert('WARNING','Bạn không đủ điều kiện sử dụng voucher của chúng tôi !')
+                }
+            } else {
+                
+                Alert.alert('Cảnh báo','Voucher này đã được sử dụng',[
+                    {
+                        text : 'OK',
+                        onPress : ()=>{
+                            onHandlerRefresh();
+                            setApply(0);
+                        }
+                    }
+                ])
+            }
+        })
+        .catch(err=>console.log(err))
     }
     return(
         <View style={styles.containerVoucherModal}>
@@ -166,14 +193,14 @@ const NameVoucher = ({item, setDataVoucher,setApply ,setVisible, total}) => {
         </View>
     )
 }
-const renderIdVoucher = (item, setDataVoucher, setApply, setVisible, total) => {
+const renderIdVoucher = (item, setDataVoucher, setApply, setVisible, total,onHandlerRefresh, setIdDetailVoucher) => {
     return(
         <View style={styles.containerVoucherModal}>
             <View style={styles.containerLogo}>
                 <Text style={styles.textLogo}>DEV</Text>
                 <Text style={styles.textLogo}>FOOD</Text>
             </View>
-            <NameVoucher item={item} setDataVoucher={setDataVoucher} setApply={setApply} setVisible={setVisible} total ={total}/>
+            <NameVoucher item={item} setDataVoucher={setDataVoucher} setApply={setApply} setVisible={setVisible} total ={total} onHandlerRefresh={onHandlerRefresh} setIdDetailVoucher={setIdDetailVoucher}/>
         </View>
     )
 }
@@ -187,6 +214,7 @@ const Body = ({navigation}) => {
     const [visible, setVisible] = useState(false);
     const [refreshing, setRefreshing] = useState(true);
     const [refreshing2, setRefreshing2] = useState(true);
+    const [idDetailVoucher, setIdDetailVoucher] = useState();
     const cart = useSelector(state=>state.Cart)
     useEffect(()=>{
         getCart(Account.idAccount, setData);
@@ -214,7 +242,33 @@ const Body = ({navigation}) => {
                 }
             ])
         } else {
+            fetch('http://10.0.2.2:3000/Cart/checkVoucher', {
+        method : 'POST',
+        headers : {
+            'Content-Type' : 'application/json',
+        },
+        body : JSON.stringify({
+            _id : idDetailVoucher,
+        })
+    })
+    .then(res=>res.json())
+    .then(res=>{
+        if(res.length > 0) {
             navigation.navigate('CheckOut',{total, apply, dataVoucher, data});
+            console.log('Sử dụng được');
+        } else {
+            setApply(0);
+            Alert.alert('Cảnh báo','Voucher đã được bạn sử dụng', [
+                {
+                    text : 'OK',
+                    onPress: ()=>{
+                    navigation.navigate('CheckOut',{total, apply, dataVoucher, data});
+                    }
+                }
+            ])
+        }
+    })
+    .catch(err=>console.log(err))
         }
     }
     
@@ -250,7 +304,7 @@ const Body = ({navigation}) => {
             <Modal visible={visible} onDismiss={()=>setVisible(false)}>
                 <View style={styles.modal}>
                     <FlatList data={voucher}
-                            renderItem={({item})=>renderIdVoucher(item, setDataVoucher, setApply, setVisible, total)}
+                            renderItem={({item})=>renderIdVoucher(item, setDataVoucher, setApply, setVisible, total,onHandlerRefresh, setIdDetailVoucher)}
                             onRefresh={onHandlerRefresh}
                             refreshing={false}
                             />

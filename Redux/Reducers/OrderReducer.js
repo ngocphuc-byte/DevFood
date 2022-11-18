@@ -1,7 +1,8 @@
 export const ADD_TO_ORDER = 'ADD_TO_ORDER';
 export const REMOVE_ORDER = 'REMOVE_ORDER';
 export const REMOVE_ITEM = 'REMOVE_ITEM';
-export const UPDATE_ORDER = 'UPDATE_ORDER'
+export const UPDATE_ORDER = 'UPDATE_ORDER';
+export const UPDATE_STATE_POINT = 'UPDATE_STATE_POINT';
 const initialState = [];
 const OrderReducer = (state = initialState, payload) => {
     switch(payload.type) {
@@ -19,6 +20,7 @@ const OrderReducer = (state = initialState, payload) => {
                         state : payload.state,
                         total : payload.total,
                         createdAt : payload.createdAt,
+                        point : payload.point,
                     }
                 ];
         case REMOVE_ORDER : 
@@ -35,6 +37,16 @@ const OrderReducer = (state = initialState, payload) => {
                 }
                 return item
             })
+        case UPDATE_STATE_POINT :
+                return state.map(item=>{
+                    if(item._id == payload._id){
+                        return {
+                            ...item,
+                            point : payload.point,
+                        }
+                    }
+                    return item
+                })
     }
     return state;
 }

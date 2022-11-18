@@ -14,7 +14,7 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import Icon2 from 'react-native-vector-icons/MaterialCommunityIcons';
 import { black, greenlight, white, yellow } from "../Style/colors";
 import { useSelector, useDispatch } from "react-redux";
-import { getFood, getTotal } from "../API/Cart";
+import { getFood, getTotal, getTotal2 } from "../API/Cart";
 import { Card, Modal, Paragraph } from "react-native-paper";
 import {InsertPayment, onHandlerGetOrder} from '../API/CheckOut'
 import RNMomosdk from 'react-native-momosdk';
@@ -70,7 +70,7 @@ const renderFood = (item) => {
         </View>
     )
 }
-const Body = ({total, apply, state, setState, sum, setSum, stateReceive, setStateReceive, stateLoading, setStateLoading, open, idCart, navigation, idVoucher}) => {
+const Body = ({total, apply, state, setState, sum, setTotal, stateReceive, setStateReceive, stateLoading, setStateLoading, open, idCart, navigation, idVoucher, setSum}) => {
     const [data, setData] = useState([]);
     const [feeDelivery, setFeeDelivery] = useState(30);
     const Cart = useSelector(state=>state.Cart);
@@ -80,15 +80,14 @@ const Body = ({total, apply, state, setState, sum, setSum, stateReceive, setStat
     }
     const onHandlerMethodReceive1 = () => {
         setStateReceive(true)
-        setSum(total-apply-feeDelivery)
+        setTotal(total-feeDelivery)
     }
     const onHandlerMethodReceive2 = () => {
         setStateReceive(false)
-        setSum(total-apply+feeDelivery)
+        setTotal(total+feeDelivery)
     }
     useEffect(()=>{
         setData(Cart);
-        setSum(total-apply)
     },[])
     return(
         <ScrollView style={styles.containerBody} horizontal={false}>
@@ -226,7 +225,7 @@ const Body = ({total, apply, state, setState, sum, setSum, stateReceive, setStat
                 </View>
                 <View style={[styles.containerDetail,{justifyContent:'space-between',marginTop : 5}]}>
                     <Text style={{fontSize : 17}}>Tổng tiền hàng ({Cart.length})</Text>
-                    <Text style={{fontSize : 17}}>{total}.000 VNĐ</Text>
+                    <Text style={{fontSize : 17}}>{sum}.000 VNĐ</Text>
                 </View>
                 {
                     apply != 0 ?
@@ -251,13 +250,13 @@ const Body = ({total, apply, state, setState, sum, setSum, stateReceive, setStat
             </View>
             {
                 open == false ?
-                null : <Loading stateLoading={stateLoading} setStateLoading={setStateLoading} sum={total} state={state} stateReceive={stateReceive} idCart={idCart} idVoucher={idVoucher} navigation={navigation}
+                null : <Loading stateLoading={stateLoading} setStateLoading={setStateLoading} total={total} state={state} stateReceive={stateReceive} idCart={idCart} idVoucher={idVoucher} navigation={navigation}
                     />
             }
         </ScrollView>
     )
 }
-const Loading = ({stateLoading, setStateLoading, sum, state, stateReceive, idCart, idVoucher, navigation}) => {
+const Loading = ({stateLoading, setStateLoading, total, state, stateReceive, idCart, idVoucher, navigation}) => {
     
     const progress = useRef(new Animated.Value(0.5)).current; // useSharedValue(0)
     const scale = useRef(new Animated.Value(1)).current;
@@ -296,24 +295,17 @@ const Loading = ({stateLoading, setStateLoading, sum, state, stateReceive, idCar
     const dispatch = useDispatch();
     const Payment = () => {
         if(state == true) {
-            console.log('Momo ',sum);
-            // if(stateReceive==true) {
-            //     console.log('Momo nhận thức ăn tại cửa hàng')
-            //     // onPress()
-            //     InsertPayment(idCart, idVoucher, 'Momo', 'tại cửa hàng', 'Đợi duyệt', 'Đợi duyệt', sum);
-            // } else {
-            //     console.log('Momo giao hàng tận nơi')
-            //     // onPress()
-            //     InsertPayment(idCart, idVoucher, 'Momo', 'tại nhà', 'Đợi duyệt', 'Đợi duyệt', sum);
-            // }
-
-            onPress(idCart, idVoucher, sum);
+            console.log('Momo ',total);
+            onPress(idCart, idVoucher, total);
         }
          else {
-            console.log('Nhận hàng', sum);
             if(stateReceive==true){
-                console.log('Nhận hàng tại cửa hàng');
-                InsertPayment(idCart, String(idVoucher), 'Cash', 'Nhận tại cửa hàng', 'Đợi duyệt', 'Đợi duyệt', sum);
+                console.log('Nhận hàng tại cửa hàng', idVoucher);
+                if(idVoucher==undefined){
+                    InsertPayment(idCart, "1", 'Cash', 'Nhận tại cửa hàng', 'Chưa duyệt', 'Chưa duyệt', total);
+                } else{
+                    InsertPayment(idCart, idVoucher, 'Cash', 'Nhận tại cửa hàng', 'Chưa duyệt', 'Chưa duyệt', total);
+                }
                 dispatch(AddOrder())
                 dispatch(RemoveAll());
                 Alert.alert('Đơn hàng', 'Chúng tôi đã nhận được đơn hàng của bạn, vui lòng đợi 1 ít phút để chúng tôi duyệt đơn hàng của bạn. Xin trân trọng cảm ơn !',[
@@ -327,8 +319,12 @@ const Loading = ({stateLoading, setStateLoading, sum, state, stateReceive, idCar
                     }
                 ])
             } else {
-                console.log('Giao hàng tận nơi');
-                InsertPayment(idCart, String(idVoucher), 'Cash', 'Nhận tại nhà', 'Đợi duyệt', 'Đợi duyệt', sum);
+                console.log('Giao hàng tận nơi', idVoucher);
+                if(idVoucher==undefined){
+                    InsertPayment(idCart, "1", 'Cash', 'Nhận tại nhà', 'Chưa duyệt', 'Chưa duyệt', total);
+                } else {
+                    InsertPayment(idCart, idVoucher, 'Cash', 'Nhận tại nhà', 'Chưa duyệt', 'Chưa duyệt', total);
+                }
                 dispatch(RemoveAll());
                 Alert.alert('Đơn hàng', 'Chúng tôi đã nhận được đơn hàng của bạn, vui lòng đợi 1 ít phút để chúng tôi duyệt đơn hàng của bạn. Xin trân trọng cảm ơn !',[
                     {
@@ -342,10 +338,8 @@ const Loading = ({stateLoading, setStateLoading, sum, state, stateReceive, idCar
                 ])
             }
          }
-        // setStateLoading(true);
-        // setOpen(true);
     }
-    const onPress = async (idCart, idVoucher, sum) => {
+    const onPress = async (idCart, idVoucher, total) => {
         let jsonData = {};
         jsonData.enviroment = enviroment; //SANBOX OR PRODUCTION
         jsonData.action = "gettoken"; //DO NOT EDIT
@@ -353,20 +347,20 @@ const Loading = ({stateLoading, setStateLoading, sum, state, stateReceive, idCar
         jsonData.merchantcode = merchantcode; //edit your merchantcode here
         jsonData.merchantnamelabel = merchantNameLabel;
         jsonData.description = billdescription;
-        jsonData.amount = sum*1000;//order total amount
+        jsonData.amount = total*1000;//order total amount
         jsonData.orderId = "Một chú nai vàng ngơ ngác";
         jsonData.orderLabel = "Ma don hang";
         jsonData.appScheme = "momocgv20170101";// iOS App Only , match with Schemes Indentify from your  Info.plist > key URL types > URL Schemes
         console.log("data_request_payment " + JSON.stringify(jsonData));
         if (Platform.OS === 'android'){
           let dataPayment = await RNMomosdk.requestPayment(jsonData);
-          momoHandleResponse(dataPayment, idCart, idVoucher, sum);
+          momoHandleResponse(dataPayment, idCart, idVoucher, total);
         }else{
           RNMomosdk.requestPayment(jsonData);
         }
     }
     
-    const momoHandleResponse = async (response, idCart, idVoucher, sum) => {
+    const momoHandleResponse = async (response, idCart, idVoucher, total) => {
         console.log('---RESPONSE---: ',response)
       try{
         if (response && response.status == 0) {
@@ -380,7 +374,11 @@ const Loading = ({stateLoading, setStateLoading, sum, state, stateReceive, idCar
             console.log('//MESSAGE : ',message)
             if(stateReceive==true) {
                 console.log('Momo nhận thức ăn tại cửa hàng')
-                InsertPayment(idCart, String(idVoucher), 'Momo', 'Nhận tại cửa hàng' , 'Đợi duyệt', 'Đợi duyệt', sum);
+                if(idVoucher==undefined){
+                    InsertPayment(idCart, "1", 'Momo', 'Nhận tại cửa hàng' , 'Chưa duyệt', 'Chưa duyệt', total);
+                } else{
+                    InsertPayment(idCart, idVoucher, 'Momo', 'Nhận tại cửa hàng' , 'Chưa duyệt', 'Chưa duyệt', total);
+                }
                 dispatch(RemoveAll());
                 Alert.alert('Đơn hàng', 'Chúng tôi đã nhận được đơn hàng của bạn, vui lòng đợi 1 ít phút để chúng tôi duyệt đơn hàng của bạn. Xin trân trọng cảm ơn !',[
                     {
@@ -394,7 +392,11 @@ const Loading = ({stateLoading, setStateLoading, sum, state, stateReceive, idCar
                 ])
             } else {
                 console.log('Momo giao hàng tận nơi')
-                InsertPayment(idCart, String(idVoucher), 'Momo', 'Nhận tại nhà', 'Đợi duyệt', 'Đợi duyệt', sum);
+                if(idVoucher==undefined){
+                    InsertPayment(idCart, '1', 'Momo', 'Nhận tại nhà', 'Chưa duyệt', 'Chưa duyệt', total);
+                } else {
+                    InsertPayment(idCart, idVoucher, 'Momo', 'Nhận tại nhà', 'Chưa duyệt', 'Chưa duyệt', total);
+                }
                 dispatch(RemoveAll());
                 Alert.alert('Đơn hàng', 'Chúng tôi đã nhận được đơn hàng của bạn, vui lòng đợi 1 ít phút để chúng tôi duyệt đơn hàng của bạn. Xin trân trọng cảm ơn !',[
                     {
@@ -447,7 +449,7 @@ const Loading = ({stateLoading, setStateLoading, sum, state, stateReceive, idCar
         </Modal>
     )
 }
-const Footer = ({sum, state, stateReceive, idCart, idVoucher, navigation, stateLoading, setStateLoading, open, setOpen}) => {
+const Footer = ({total, setStateLoading, open, setOpen}) => {
     const onHandlerPayment = () => {
         setStateLoading(true);
         setOpen(true);
@@ -456,7 +458,7 @@ const Footer = ({sum, state, stateReceive, idCart, idVoucher, navigation, stateL
         <View style={styles.containerFooter}>
             <View style={styles.containerTotal}>
                 <Text style={styles.textTotal}>Tổng thanh toán</Text>
-                <Text style={[styles.textTotal,{fontSize : 22, color : yellow}]}>{sum}.000 VNĐ</Text>
+                <Text style={[styles.textTotal,{fontSize : 22, color : yellow}]}>{total}.000 VNĐ</Text>
             </View>
             <TouchableOpacity style={styles.containerButton} onPress={onHandlerPayment}>
                 <Text style={[styles.textHeader, {color : white, fontSize : 20}]}>Đặt hàng</Text>
@@ -481,13 +483,13 @@ const CheckOut = ({navigation, route}) => {
         return dataVoucher;
     })
     useEffect(()=>{
-        getTotal(Account.idAccount , setTotal);
+        getTotal2(Account.idAccount , setTotal, apply, setSum);
     },[])
     return(
         <View style={styles.container}>
             <Header navigation={navigation}/>
-            <Body total={total} apply={apply} state={state} setState={setState} sum={sum} setSum ={setTotal} stateReceive={stateReceive} setStateReceive={setStateReceive} stateLoading={stateLoading} setStateLoading={setStateLoading} open={open} idCart={idCart} navigation={navigation} idVoucher={idVoucher}/>
-            <Footer sum={total} state={state} stateReceive={stateReceive} idCart={idCart} idVoucher={idVoucher} navigation={navigation} stateLoading={stateLoading} setStateLoading={setStateLoading} open={open} setOpen={setOpen}/>
+            <Body total={total} apply={apply} state={state} setState={setState} sum={sum} setTotal ={setTotal} stateReceive={stateReceive} setStateReceive={setStateReceive} stateLoading={stateLoading} setStateLoading={setStateLoading} open={open} idCart={idCart} navigation={navigation} idVoucher={idVoucher} setSum ={setSum}/>
+            <Footer total={total} setTotal={setTotal} setStateLoading={setStateLoading} open={open} setOpen={setOpen}/>
         </View>
     )
 }

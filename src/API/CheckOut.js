@@ -19,7 +19,7 @@ export const InsertPayment = (id_Cart, id_DetailVoucher,
         })
     }).then(res=>res.json())
     .then(result => {
-        if(id_DetailVoucher=='undefined'){
+        if(id_DetailVoucher=='1'){
             console.log(result);
             changeStateCart(id_Cart);
         } else{

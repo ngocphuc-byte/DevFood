@@ -175,6 +175,22 @@ export const getTotal = (id_Account, setTotal) => {
     })
     .catch(err=>err)
 }
+export const getTotal2 = (id_Account, setTotal, apply, setSum) => {
+    fetch(API+'/getTotal',{
+        method : 'POST',
+        headers : {
+            'Content-Type' : 'application/json',
+        },
+        body : JSON.stringify({
+            id_Account : id_Account
+        })
+    }).then(res=>res.json())
+    .then(result =>{
+        setTotal(result-apply)
+        setSum(result)
+    })
+    .catch(err=>err)
+}
 export const getIdVoucher = (id_Account, setVoucher) => {
     fetch(API+'/getIdVoucher',{
         method : 'POST',
@@ -230,5 +246,25 @@ export const RemoveItemCart = (id_Account, id_Food) => {
         })
     }).then(res=>res.json())
     .then(result=>console.log(result))
+    .catch(err=>console.log(err))
+}
+export const checkVoucher = (_id) => {
+    fetch('http://10.0.2.2:3000/Cart/checkVoucher', {
+        method : 'POST',
+        headers : {
+            'Content-Type' : 'application/json',
+        },
+        body : JSON.stringify({
+            _id : _id,
+        })
+    })
+    .then(res=>res.json())
+    .then(res=>{
+        if(res.length > 0) {
+            console.log('Sử dụng được');
+        } else {
+            console.log('Không sử dụng được')
+        }
+    })
     .catch(err=>console.log(err))
 }

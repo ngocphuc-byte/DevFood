@@ -37,7 +37,8 @@ app.post('/account_user/insert', (req,res) => {
         address : req.body.address,
         phone : req.body.phone,
         email : '',
-        avatar : '',
+        avatar : 'https://i.postimg.cc/Hn9fZv8k/SD-BLUE-600x600-removebg-preview.png',
+        point : 0,
         deleted : false,
     })
     Account.save()
@@ -71,6 +72,7 @@ app.post('/account_user/insertgoogle', async(req,res)=>{
         phone : req.body.phone,
         email : req.body.email,
         avatar : req.body.avatar,
+        point : 0,
         deleted : false,
     })
     insert.save()
@@ -92,29 +94,26 @@ app.post('/account_user/update', async (req, res)=>{
 })
 //----------------------------------------Food------------------------------------\\
 app.get('/food/getfood', async (req, res)=>{
-    const food = await Food.find({type : 'food'});
+    const food = await Food.find({type : 'food', deleted : false});
     res.json(food);
 })
 app.get('/food/getdrink', async (req, res)=>{
-    const food = await Food.find({type : 'drink'});
+    const food = await Food.find({type : 'drink', deleted : false});
     res.json(food);
 })
 app.get('/food/getsidefood', async (req, res)=>{
-    const food = await Food.find({type : 'sidefood'});
+    const food = await Food.find({type : 'sidefood', deleted : false});
     res.json(food);
 })
 
 //----------------------------------------Voucher------------------------------------\\
 app.post('/voucher/insert', async (req, res)=>{
-    const date = new Date();
-    // var newDate = new Date(date.getTime() - date.getTimezoneOffset()*60*1000);
-    // Voucher.createIndexes({createAt : 1, expireAfterSeconds : 15000})
     const voucher = await new Voucher({
         name : req.body.name,
         discount : req.body.discount,
         minprice : req.body.minprice,
-        special : false,
-        point : 0
+        special : true,
+        point : 20,
     })
     voucher.save()
     res.json(voucher);
@@ -276,6 +275,10 @@ app.post('/Cart/delete', async(req,res) => {
     const deleteCart = await Cart.updateOne({id_Account, state : true},{$pull : {'detail_Cart': {'id_Food' : id_Food}}},{multi : true})
     res.json(deleteCart);
 })
+app.post('/Cart/checkVoucher', async(req,res)=>{
+    const checkVoucher = await Detail_Voucher.find({_id : req.body._id, state : true})
+    res.json(checkVoucher);
+})
 //----------------------------------------Payment------------------------------------\\
 app.post('/Payment/insert', async(req, res)=>{
     const payment = await new Payment({
@@ -287,6 +290,7 @@ app.post('/Payment/insert', async(req, res)=>{
         order_Status : req.body.order_Status,
         state : true,
         total : req.body.total,
+        point : true,
     })
     payment.save();
     res.json(payment);
@@ -340,6 +344,11 @@ app.post('/OrderDetail/getTotalQuantity', async(req,res)=>{
     const detail = cart.map(item=>item.detail_Cart.map(item=>sum+=item.quantity));
     res.json(sum);
 })
+app.post('/OrderDetail/getVoucher', async (req,res)=>{
+    const detail_voucher = await Detail_Voucher.findOne({_id : req.body._id});
+    const voucher = await Voucher.findOne({_id : detail_voucher.id_Voucher});
+    res.json(voucher);
+})
 //----------------------------------------History------------------------------------\\
 app.post('/History/getCart', async (req,res)=>{
     const getCart = await Cart.find({_id : req.body._id});
@@ -369,6 +378,35 @@ app.post('/History/insertCart', async(req,res)=>{
         {new : true}
     )
     res.json(insert)
+})
+app.post('/History/checkCart', async (req,res)=>{
+    const check = await Cart.findOne({id_Account : req.body.id_Account, state: true})
+    res.json(check)
+})
+//----------------------------------------Point------------------------------------\\
+app.post('/Point/AddPoint', async (req, res)=>{
+    const getPoint = await Account_User.findById({_id : req.body._id});
+    const update = await Account_User.findByIdAndUpdate(getPoint,
+        {point : req.body.point+getPoint.point},
+        {new : true}
+        )
+    res.json(update)
+})
+app.post('/Point/MinusPoint', async (req, res)=>{
+    const getPoint = await Account_User.findById({_id : req.body._id});
+    const update = await Account_User.findByIdAndUpdate(getPoint,
+        {point : getPoint.point-req.body.point},
+        {new : true}
+        )
+    res.json(update)
+})
+app.post('/Point/ChangeStatePoint', async(req,res)=>{
+    const id = await Payment.findByIdAndUpdate(
+        {_id : req.body._id},
+        {point : false},
+        {new : true}
+        );
+    res.json(id);
 })
 app.get('/', (req,res) => {
     res.send('WELCOME TO NODEJS');

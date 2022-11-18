@@ -1,10 +1,12 @@
 export const Account = 'Account';
+export const UPDATE_POINT = 'UPDATE_POINT';
 const initialState = {
     idAccount : '',
     fullname : '',
     address : '',
     phone : '',
     avatar : '',
+    point : 0,
 };
 const AccountReducer = (state = initialState, payload) => {
     switch(payload.type){
@@ -16,7 +18,16 @@ const AccountReducer = (state = initialState, payload) => {
                     address : payload.address,
                     phone : payload.phone,
                     avatar : payload.avatar,
+                    point : payload.point,
                 }
+        case UPDATE_POINT :
+                if(state.idAccount == payload.idAccount){
+                    return {
+                        ...state,
+                        point : payload.point,
+                    }
+                }
+                
         default : return state;
     }
 }

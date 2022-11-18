@@ -67,7 +67,7 @@ const Body =({navigation}) =>{
                 </View>
                 <View style={styles.containerPoint}>
                     <View style={styles.point}>
-                        <Text style={styles.textPoint}>Point: 4</Text>
+                        <Text style={styles.textPoint}>Point: {account.point}</Text>
                     </View>
                     <View style={styles.favorite}>
                         <Text style={styles.textPoint}>Yêu thích: 10</Text>

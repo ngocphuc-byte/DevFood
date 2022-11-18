@@ -1,8 +1,8 @@
-import { ADD_TO_ORDER, REMOVE_ITEM, REMOVE_ORDER, UPDATE_ORDER } from "../Reducers/OrderReducer"
+import { ADD_TO_ORDER, REMOVE_ITEM, REMOVE_ORDER, UPDATE_ORDER, UPDATE_STATE_POINT } from "../Reducers/OrderReducer"
 
 
 export const AddOrder = (_id, id_Cart, id_DetailVoucher, payment_Method
-    , receive_Method, confirm_Order, order_Status, state, total, createdAt) =>
+    , receive_Method, confirm_Order, order_Status, state, total, createdAt, point) =>
     async dispatch => {
         try {
             dispatch({
@@ -17,6 +17,7 @@ export const AddOrder = (_id, id_Cart, id_DetailVoucher, payment_Method
                 state : state,
                 total : total,
                 createdAt : createdAt,
+                point : point,
             })
         } catch (error) {
             console.log(error);
@@ -54,5 +55,18 @@ export const UpdateOrder = (_id, state) =>
             })
         } catch (error) {
             console.log(error)
+        }
+    }
+
+export const UpdatePoint = (_id, point) =>
+    async dispatch => {
+        try {
+            dispatch({
+                type : UPDATE_STATE_POINT,
+                _id : _id,
+                point : point
+            })
+        } catch (error) {
+            console.log(error);
         }
     }

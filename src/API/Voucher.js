@@ -13,7 +13,7 @@ export const onHandlerGetSpecial = (setData) => {
         .then(result=>setData(result))
         .catch(err=>console.log(err))
 }
- const insertVoucher = (id_Voucher, id_Account) => {
+export const insertVoucher = (id_Voucher, id_Account) => {
     fetch(API+'/voucher_account',{
         method : 'POST',
         headers : {

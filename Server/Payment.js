@@ -10,6 +10,7 @@ const Payment = mongoose.Schema({
     order_Status : String,
     state : Boolean,
     total : Number,
+    point : Boolean,
     createdAt : {
         type : Date,
         default : newDate,

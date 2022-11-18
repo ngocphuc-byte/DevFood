@@ -14,9 +14,12 @@ import Icon3 from 'react-native-vector-icons/FontAwesome'
 import { useDispatch, useSelector } from 'react-redux';
 import { black, yellow } from '../Style/colors';
 import { styles } from '../Style/History';
-import { deleteAll, getCart, getIdCart, insertCart } from '../API/History';
+import { deleteAll, getCart, getIdCart, insertCart, onHandlerCheckCart } from '../API/History';
 import {updateTotal} from '../API/Cart'
 import { AddCart, RemoveAll } from '../../Redux/Actions/CartAction';
+import { onHandlerAddPoint } from '../API/Point';
+import { UpdatePoint } from '../../Redux/Actions/OrderAction';
+import { UpdatePointAccount } from '../../Redux/Actions/AccountAction';
 const Header = ({navigation}) => {
     const onHandlerBack = () => {
         navigation.goBack();
@@ -30,20 +33,57 @@ const Header = ({navigation}) => {
         </View>
     )
 }
-const renderItem = (item, setCart, dispatch, idCart, navigation)=>{
-    const date = item.createdAt;
-    const onHandlerReOrder = () => {    
-        Alert.alert('Thành công','Món ăn đặt lại đã được thêm vào giỏ hàng !',[
-            {
-                text : 'OK',
-                onPress: ()=>{
-                    deleteAll(idCart);
-                    dispatch(RemoveAll())
-                    getCart(item.id_Cart, setCart);
-                }
-            }
-        ])
+const ButtonPoint = ({item, dispatch,Account})=> {
+    const [statePoint, setStatePoint] = useState(true);
+    const updatePoint = () => {
+        let calculation = Math.round(item.total/10);
+        onHandlerAddPoint(Account.idAccount, calculation, item._id);
+        dispatch(UpdatePoint(item._id, false))
+        dispatch(UpdatePointAccount(Account.idAccount, Account.point+calculation))
+        setStatePoint(false)
     }
+    useEffect(()=>{
+        setStatePoint(item.point)
+    },[])
+    return(
+        <View>
+                {  
+            statePoint == true ?
+                    <TouchableOpacity style={styles.buttonReOrder} onPress={updatePoint}>
+                        <Text style={styles.buttonReOrder.text}>Point</Text>
+                    </TouchableOpacity>
+                    :
+                    <TouchableOpacity style={[styles.buttonReOrder,{backgroundColor : '#ccc'}]} onPress={UpdatePoint} disabled={true}>
+                        <Text style={styles.buttonReOrder.text}>Point</Text>
+                    </TouchableOpacity>
+                }
+        </View>
+        
+    )
+}
+const renderItem = (item, setCart, dispatch, idCart, navigation, Account, stateCart)=>{
+    const date = item.createdAt;
+    const onHandlerReOrder = () => {
+        if(stateCart==true){
+            Alert.alert('Thành công','Món ăn đặt lại đã được thêm vào giỏ hàng !',[
+                {
+                    text : 'OK',
+                    onPress: ()=>{
+                        deleteAll(idCart);
+                        dispatch(RemoveAll())
+                        getCart(item.id_Cart, setCart);
+                    }
+                }
+            ])
+        } else {
+            Alert.alert('Thông báo','Vui lòng thêm bất kì sản phẩm vào giỏ hàng sau đó quay lại đặt hàng lại',[
+                {
+                    text : 'OK',
+                }
+            ])
+        }
+    }
+    
     const onHandlerDetail = () => {
         navigation.navigate('History_Information',{item})
     }
@@ -74,6 +114,7 @@ const renderItem = (item, setCart, dispatch, idCart, navigation)=>{
                                     </View>
                                     <View style={styles.containerReOrder}>
                                         <Text>{item.order_Status}</Text>
+                                        <ButtonPoint item={item} dispatch={dispatch} Account={Account}/>
                                         <TouchableOpacity style={styles.buttonReOrder} onPress={onHandlerReOrder}>
                                             <Text style={styles.buttonReOrder.text}>Đặt lại</Text>
                                         </TouchableOpacity>
@@ -91,6 +132,7 @@ const Body = ({navigation}) => {
     const [order, setOrder] = useState([]);
     const [cart, setCart] = useState([]);
     const [idCart, setIdCart] = useState();
+    const [stateCart, setStateCart] = useState(true);
     const Order = useSelector(state=>state.Order);
     const Account = useSelector(state=>state.Login);
     const dispatch = useDispatch();
@@ -100,11 +142,14 @@ const Body = ({navigation}) => {
     useEffect(()=>{
         getOrder()
         getIdCart(Account.idAccount, setIdCart)
+        console.log(Account)
+        console.log(Order)
+        onHandlerCheckCart(Account.idAccount, setStateCart)
     },[])
     const onHandlerCart = () => {
-        cart.map(item=>dispatch(AddCart(item.id_Food, item.quantity, item.price)))
-        cart.map(item=>insertCart(idCart, item.id_Food, item.quantity, item.price))
-        updateTotal(Account.idAccount);
+            cart.map(item=>dispatch(AddCart(item.id_Food, item.quantity, item.price)))
+            cart.map(item=>insertCart(idCart, item.id_Food, item.quantity, item.price))
+            updateTotal(Account.idAccount);
     }
     useEffect(()=>{
         onHandlerCart();
@@ -113,7 +158,7 @@ const Body = ({navigation}) => {
         <View style={styles.containerBody}>
             <View style={styles.containerItem}>
                 <FlatList data={order}
-                        renderItem={({item})=>renderItem(item, setCart, dispatch,idCart, navigation)}
+                        renderItem={({item})=>renderItem(item, setCart, dispatch,idCart, navigation, Account, stateCart)}
                         keyExtractor={(item,index)=>index}/>
             </View>
         </View>

@@ -9,6 +9,7 @@ const account_user = mongoose.Schema({
     phone : String,
     email : String,
     avatar : String,
+    point : Number,
     deleted : Boolean,
 })
 mongoose.model('Account_User', account_user);

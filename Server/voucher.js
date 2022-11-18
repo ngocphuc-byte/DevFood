@@ -7,11 +7,9 @@ const Voucher = mongoose.Schema({
     minprice : Number,
     special : Boolean,
     point : Number,
-    createAt : 
-    {
+    createdAt : {
         type : Date,
-        // expires : 50000,
         default : newDate,
-    },
+    }
 })
 mongoose.model('Voucher', Voucher);

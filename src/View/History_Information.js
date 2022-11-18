@@ -13,7 +13,7 @@ import { black, greenlight, orange, yellow } from "../Style/colors";
 import { ScrollView } from "react-native-gesture-handler";
 import { Caption, Paragraph } from "react-native-paper";
 import { useEffect } from "react";
-import { getFood, getCart, totalCart, totalQuantity } from "../API/Order_Inforamation";
+import { getFood, getCart, totalCart, totalQuantity, getVoucher } from "../API/Order_Inforamation";
 import { useState } from "react";
 import { useDispatch, useSelector} from 'react-redux';
 import { UpdateOrder } from "../../Redux/Actions/OrderAction";
@@ -60,7 +60,7 @@ const renderFood = (item) => {
         </View>
     )
 }
-const Body = ({item, cart, setCart,idCart, onHandlerCart}) => {
+const Body = ({item, cart, setCart,idCart, onHandlerCart, voucher}) => {
     const [total, setTotal] = useState(0);
     const [quantity, setQuantity] = useState(0);
     const Account = useSelector(state=>state.Login);
@@ -166,11 +166,15 @@ const Body = ({item, cart, setCart,idCart, onHandlerCart}) => {
                         </View> : null
                     }
                     {
-                        item.id_DetailVoucher == 'undefined' ?
+                        item.id_DetailVoucher == '1' ?
                         null :
                         <View style={styles.containerDetail}>
                             <Text style={styles.textDetail}>Voucher</Text>
-                            <Text style={styles.textDetail}>-30.000 VNĐ</Text>
+                            {
+                                voucher==undefined ?
+                                <Text style={styles.textDetail}>Chưa cập nhật</Text>
+                                : <Text style={styles.textDetail}>-{voucher.discount}.000 VNĐ</Text>
+                            }
                         </View>
                     }
                     <Text style={styles.textTotalSumary}>{item.total}.000 VNĐ</Text>
@@ -191,9 +195,21 @@ const History_Information = ({route, navigation}) => {
     const [cart, setCart] = useState([]);
     const [idCart, setIdCart] = useState();
     const Account = useSelector(state=>state.Login);
+    const [voucher, setVoucher] = useState();
+    const Order = useSelector(state=>state.Order);
+    const checkVoucher = () => {
+        if(item.id_DetailVoucher == '1'){
+            setVoucher('1');
+        } else {
+            getVoucher(item.id_DetailVoucher, setVoucher);
+        }
+    }
     const dispatch = useDispatch();
     useEffect(()=>{
+        checkVoucher();
         getIdCart(Account.idAccount, setIdCart)
+        console.log(Account);
+        
     },[])
     const onHandlerCart = () => {
         cart.map(item=>dispatch(AddCart(item.id_Food, item.quantity, item.price)))
@@ -207,7 +223,7 @@ const History_Information = ({route, navigation}) => {
     return (
         <View style={styles.container}>
             <Header navigation={navigation}/>
-            <Body item={item} cart = {cart} setCart={setCart} idCart={idCart} onHandlerCart={onHandlerCart}/>
+            <Body item={item} cart = {cart} setCart={setCart} idCart={idCart} onHandlerCart={onHandlerCart} voucher={voucher}/>
         </View>
     )
 }

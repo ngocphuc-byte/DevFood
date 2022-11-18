@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { orange } from "../Style/colors";
 import { getImage, getOrder } from "../API/Order";
 import { AddOrder, RemoveItem, RemoveOrder } from "../../Redux/Actions/OrderAction";
+import { getVoucher } from "../API/Order_Inforamation";
 const Header = () => {
     return (
             <View style={styles.containerHeader}>
@@ -50,7 +51,7 @@ const ImageFood = ({item}) => {
     )
 }
 const renderOrder = (item,navigation, dispatch, onHandlerRefresh) => {
-    const date = item.createdAt.toString();
+    const date = item.createdAt
     const onPress = () => {
         updateState(item._id, dispatch)
         onHandlerRefresh();
@@ -79,7 +80,7 @@ const renderOrder = (item,navigation, dispatch, onHandlerRefresh) => {
                                 <View style={styles.containerInfoNotification}>
                                         <Text style={[styles.textNotification,{fontWeight : 'bold',fontSize : 20}]}>Đơn hàng của bạn: <Text style={{color:orange}}>{item.order_Status}</Text></Text>
                                         <Text style={[styles.textNotification]}>Cảm ơn bạn đã tin tưởng và đặt hàng trên ứng dụng của chúng tôi</Text>
-                                        <Text style={[styles.textNotification,{fontSize : 13}]}>{date.slice(0,10)} {date.slice(11,19)}</Text>
+                                        {/* <Text style={[styles.textNotification,{fontSize : 13}]}>{date.slice(0,10)} {date.slice(11,19)}</Text> */}
                                     </View>
                             </View>
                         }
@@ -94,12 +95,14 @@ const Body = ({navigation}) => {
     const Order = useSelector(state=>state.Order);
     const Account = useSelector(state=>state.Login);
     const [order, setOrder] = useState([]);
+    const [voucher, setVoucher] = useState();
     const [refreshing, setRefreshing] = useState(false);
     const dispatch = useDispatch();
 
     useEffect(()=>{
         onHandlerGetNews(setData)
         setOrder(Order);
+        
     },[refreshing])
     const onHandlerWatchAll = () => {
         console.log(order);
@@ -111,7 +114,7 @@ const Body = ({navigation}) => {
             setTimeout(()=>{
                 getNotification(Account.idAccount,dispatch, AddOrder, setOrder);
                 setRefreshing(false)
-                console.log(Order)
+                // console.log(Order)
             },300)
     }
     
@@ -147,8 +150,6 @@ const Body = ({navigation}) => {
     )
 }
 export default Notification = ({navigation}) => {
-    const cart = useSelector(state=>state.Cart);
-    console.log(cart);
     return (
         <View style={styles.container}>
             <Header />

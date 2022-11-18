@@ -53,3 +53,18 @@ export const totalQuantity = (id_Cart, setQuantity) => {
     .then(res=>setQuantity(res))
     .catch(err=>console.log(err))
 }
+export const getVoucher = (detail_Voucher, setVoucher) => {
+    fetch(API+'/getVoucher', {
+        method : 'POST',
+        headers : {
+            'Content-Type' : 'application/json',
+        },
+        body : JSON.stringify({
+            _id : detail_Voucher,
+        })
+    }).then(res=>res.json())
+    .then(res=>{
+            setVoucher(res);
+            console.log(res);
+    })
+}

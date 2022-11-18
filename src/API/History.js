@@ -1,3 +1,5 @@
+import { Alert, ToastAndroid } from "react-native";
+
 const API = 'http://10.0.2.2:3000/History';
 export const getCart = (id_Cart, setCart) => {
     fetch(API+'/getCart', {
@@ -54,4 +56,23 @@ export const insertCart = (id_Cart, id_Food, quantity, price) => {
     }).then(res=>res.json())
     .then(res=>console.log(res))
     .catch(err=>console.log(err))
+}
+export const onHandlerCheckCart = (id_Account, setStateCart) => {
+    fetch(API+'/checkCart',{
+        method : 'POST',
+        headers : {
+            'Content-Type' : 'application/json',
+        },
+        body : JSON.stringify({
+            id_Account : id_Account,
+        })
+    })
+    .then(res =>res.json())
+    .then(result => {
+        if(result == null){
+            setStateCart(false);
+        } else {
+            setStateCart(true);
+        }
+    })
 }

@@ -5,5 +5,6 @@ const food = mongoose.Schema({
     type : String,
     detail : String,
     price : Number,
+    deleted : Boolean,
 })
 mongoose.model('Food', food);

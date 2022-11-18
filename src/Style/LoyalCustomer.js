@@ -56,7 +56,7 @@ export const styles = StyleSheet.create({
         fontFamily: 'NunitoSans-Regular',
         color : white,
         top : 47,
-        left : 150
+        left : 165
     },
     containerVoucher : {
         width : '100%',
