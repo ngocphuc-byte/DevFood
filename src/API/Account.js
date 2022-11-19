@@ -1,6 +1,6 @@
 import { Alert } from "react-native"
 
-export const UpdateAccount = (idAccount,fullname, address, phone, avatar) => {
+export const UpdateAccount = (idAccount,fullname, address, phone, avatar, latitude, longtitude) => {
     fetch('http://10.0.2.2:3000/account_user/update',{
         method : 'POST',
         headers : {
@@ -12,6 +12,8 @@ export const UpdateAccount = (idAccount,fullname, address, phone, avatar) => {
             address : address,
             phone : phone,
             avatar : avatar,
+            latitude : latitude,
+            longtitude : longtitude
         })
     })
     .then(res=>res.json())

@@ -87,6 +87,8 @@ app.post('/account_user/update', async (req, res)=>{
             address : req.body.address,
             phone : req.body.phone,
             avatar : req.body.avatar,
+            latitude : req.body.latitude,
+            longtitude : req.body.longitude,
         },
         {new : true}
     )

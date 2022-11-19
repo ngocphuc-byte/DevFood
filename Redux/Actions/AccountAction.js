@@ -1,6 +1,6 @@
 import { Account, UPDATE_POINT } from "../Reducers/AccountReducer";
 
-export const AccountLogin = (idAccount, fullname,address,phone, avatar, point) => 
+export const AccountLogin = (idAccount, fullname,address,phone, avatar, point, latitude, longtitude) => 
     async dispatch => {
         try {
             dispatch({
@@ -11,6 +11,8 @@ export const AccountLogin = (idAccount, fullname,address,phone, avatar, point) =
                 phone : phone,
                 avatar : avatar,
                 point : point,
+                latitude : latitude,
+                longtitude : longtitude
             })
         } catch (error) {
             console.log(error);

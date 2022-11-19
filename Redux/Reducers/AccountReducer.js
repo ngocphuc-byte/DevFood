@@ -7,6 +7,7 @@ const initialState = {
     phone : '',
     avatar : '',
     point : 0,
+    latitude : '',
 };
 const AccountReducer = (state = initialState, payload) => {
     switch(payload.type){
@@ -19,6 +20,8 @@ const AccountReducer = (state = initialState, payload) => {
                     phone : payload.phone,
                     avatar : payload.avatar,
                     point : payload.point,
+                    latitude : payload.latitude,
+                    longtitude : payload.longtitude,
                 }
         case UPDATE_POINT :
                 if(state.idAccount == payload.idAccount){

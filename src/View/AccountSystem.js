@@ -17,6 +17,8 @@ import { AccountLogin } from "../../Redux/Actions/AccountAction";
 import ImagePicker from 'react-native-image-crop-picker';
 import { UpdateAccount } from "../API/Account";
 import FastImage from 'react-native-fast-image';
+import GetLocation from 'react-native-get-location'
+import Geocoder from 'react-native-geocoding';
 const Header = ({navigation}) => {
     return (
         <View style={styles.containerHeader}>
@@ -37,6 +39,8 @@ const Body =() =>{
     const [phone, setPhone] = useState();
     const [avatar, setAvatar] = useState();
     const [uri, setUri] = useState();
+    const [latitude, setLatitude] = useState();
+    const [longtitude , setLongtitude] = useState();
     const [type, setType] = useState();
     const [name , setName] = useState();
     const dispatch = useDispatch();
@@ -53,8 +57,8 @@ const Body =() =>{
         .then(data=>{
             // setAvatar(data.secure_url);
             console.log(data.secure_url);
-            UpdateAccount(account.idAccount,fullname, address, phone, data.secure_url);
-            dispatch(AccountLogin(account.idAccount, fullname, address, phone, avatar))
+            UpdateAccount(account.idAccount,fullname, address, phone, data.secure_url, latitude, longtitude);
+            dispatch(AccountLogin(account.idAccount, fullname, address, phone, avatar,latitude, longtitude))
         }).catch(err=>console.log(err))
     }
     const onHandlerEditAvatar = () => {
@@ -89,17 +93,32 @@ const Body =() =>{
             };
             uploadCloudinary(source);
         } else {
-            UpdateAccount(account.idAccount,fullname, address, phone, avatar);
-            dispatch(AccountLogin(account.idAccount, fullname, address, phone, avatar))
+            UpdateAccount(account.idAccount,fullname, address, phone, avatar, latitude, longtitude);
+            dispatch(AccountLogin(account.idAccount, fullname, address, phone, avatar, latitude, longtitude))
         }
         
     }
-    
+    const onHandlerLocation = () => {
+        GetLocation.getCurrentPosition({
+            enableHighAccuracy: true,
+        })
+        .then(location => {
+            console.log(location);
+            setLatitude(location.latitude);
+            setLongtitude(location.longitude);
+        })
+        .catch(error => {
+            const { code, message } = error;
+            console.warn(code, message);
+        })
+    }
     useEffect(()=>{
         setFullname(account.fullname);
         setAddress(account.address);
         setPhone(account.phone);
         setAvatar(account.avatar);
+        setLatitude(account.latitude);
+        setLongtitude(account.longtitude);
     },[])
     return (
         <View style={styles.containerBody}>
@@ -134,7 +153,7 @@ const Body =() =>{
                                         label='Địa chỉ'
                                         value={address}
                                         onChangeText={text=>setAddress(text)}
-                                        />
+                                        right={<TextInput.Icon icon='map' onPress={onHandlerLocation}/>}/>
                         </View>
 
                         <TouchableOpacity style={[styles.containerInput,{ alignItems : 'center', marginTop : 30, backgroundColor : yellow, height : 50, justifyContent : 'center' }]}

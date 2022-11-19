@@ -124,7 +124,7 @@ const LoginHome = ({imageAnimatedStyle, state, onHandlerLoginState, onHandlerClo
                     } else {
                         ToastAndroid.show('Đăng nhập thành công', ToastAndroid.SHORT)
                         dispatch(AccountLogin(result._id, result.fullname,
-                                        result.address, result.phone, result.avatar, result.point))
+                                        result.address, result.phone, result.avatar, result.point, result.latitude, result.longtitude))
                         getOrder(result._id)
                     }
                 })
@@ -201,7 +201,7 @@ const LoginHome = ({imageAnimatedStyle, state, onHandlerLoginState, onHandlerClo
             } else {
                 ToastAndroid.show('Đã có tài khoản', ToastAndroid.SHORT);
                 dispatch(AccountLogin(result._id, result.fullname,
-                    result.address, result.phone, result.avatar, result.point))
+                    result.address, result.phone, result.avatar, result.point, result.latitude, result.longtitude))
                 getOrder(result._id)
             }
         })
@@ -240,7 +240,7 @@ const LoginHome = ({imageAnimatedStyle, state, onHandlerLoginState, onHandlerClo
         .then(res=>res.json())
         .then(result => {
             dispatch(AccountLogin(result._id, result.fullname,
-                result.address, result.phone, result.avatar, result.point))
+                result.address, result.phone, result.avatar, result.point, result.latitude, result.longtitude))
                 getOrder(result._id)
         })
         .catch(err=>console.log(err))

@@ -10,6 +10,8 @@ const account_user = mongoose.Schema({
     email : String,
     avatar : String,
     point : Number,
+    latitude : String,
+    longtitude : String,
     deleted : Boolean,
 })
 mongoose.model('Account_User', account_user);
