@@ -97,6 +97,7 @@ export const styles = StyleSheet.create({
     textNotification : {
         fontSize : 16,
         fontFamily : 'NunitoSans-Regular',
+        color : '#000'
     },
     coverItem : {
         width : '100%',

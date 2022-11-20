@@ -25,6 +25,7 @@ import {useSelector, useDispatch} from 'react-redux';
 import { AccountLogin } from "../../Redux/Actions/AccountAction";
 import { AddCart } from "../../Redux/Actions/CartAction";
 import { AddOrder } from "../../Redux/Actions/OrderAction";
+import { API_General } from "../API/API_General";
 
 export const idAccount = ''; 
 const Login = ({navigation}) => {
@@ -107,7 +108,7 @@ const LoginHome = ({imageAnimatedStyle, state, onHandlerLoginState, onHandlerClo
         if(account.trim().length < 1 || password.trim().length < 1) {
             ToastAndroid.show('Nhập đầy đủ tài khoản và mật khẩu',ToastAndroid.SHORT);
         } else{
-            fetch('http://10.0.2.2:3000/account_user/get',{
+            fetch(API_General+'/account_user/get',{
                 method : 'POST',
                 headers : {
                     'Content-Type' : 'application/json'
@@ -132,7 +133,7 @@ const LoginHome = ({imageAnimatedStyle, state, onHandlerLoginState, onHandlerClo
         }
     }
     const getCart = (id_Account) => {
-        fetch('http://10.0.2.2:3000/Cart/get',{
+        fetch(API_General+'/Cart/get',{
             method : 'POST',
             headers :{
                 'Content-Type' : 'application/json'
@@ -149,7 +150,7 @@ const LoginHome = ({imageAnimatedStyle, state, onHandlerLoginState, onHandlerClo
         .catch(err=>console.log(err))
     }
     const getOrder = (id_Account) => {
-        fetch('http://10.0.2.2:3000/Payment/get',{
+        fetch(API_General+'/Payment/get',{
             method : 'POST',
             headers : {
                 'Content-Type': 'application/json',
@@ -181,7 +182,7 @@ const LoginHome = ({imageAnimatedStyle, state, onHandlerLoginState, onHandlerClo
         }
     }
     const onHandlerCheckGoogle = (email, avatar) => {
-        fetch('http://10.0.2.2:3000/account_user/checkgoogle',{
+        fetch(API_General+'/account_user/checkgoogle',{
             method : 'POST',
             headers : {
                 'Content-Type' : 'application/json',
@@ -222,7 +223,7 @@ const LoginHome = ({imageAnimatedStyle, state, onHandlerLoginState, onHandlerClo
         if(fullName.trim().length < 1 || phone.trim().length < 1 || address.trim().length < 1){
             ToastAndroid.show('Điền đầy đủ thông tin', ToastAndroid.SHORT);
         } else {
-            fetch('http://10.0.2.2:3000/account_user/insertgoogle',{
+            fetch(API_General+'/account_user/insertgoogle',{
             method : 'POST',
             headers : {
                 'Content-Type' : 'application/json',
@@ -351,7 +352,8 @@ const RegisterForm = ({account, setAccount, password, setPassword, fullname, set
                             theme={{colors: {primary:'#000'}}}
                             mode='flat'
                             value={account}
-                            onChangeText={text=>setAccount(text)}/>
+                            onChangeText={text=>setAccount(text)}
+                            autoCapitalize='none'/>
                         </View>
                     <View style={[styles.containerInput,{paddingTop : 2}]}>
                         <TextInput label='Mật khẩu'

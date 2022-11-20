@@ -1,6 +1,6 @@
 import { AddOrder } from "../../Redux/Actions/OrderAction";
-
-const API ='http://10.0.2.2:3000/Payment';
+import {API_General} from './API_General';
+const API =API_General+'/Payment';
 export const InsertPayment = (id_Cart, id_DetailVoucher,
      payment_Method, receive_Method, confirm_Order, order_Status, total) => {
     fetch(API+'/insert',{

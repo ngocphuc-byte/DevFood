@@ -1,4 +1,5 @@
-var API = 'http://10.0.2.2:3000/Cart';
+import {API_General} from'./API_General'
+var API = API_General+'/Cart';
 const onHandlerInsertCart = (id_Account, id_Food, price) => {
     fetch(API+'/insert',{
         method : 'POST',
@@ -249,7 +250,7 @@ export const RemoveItemCart = (id_Account, id_Food) => {
     .catch(err=>console.log(err))
 }
 export const checkVoucher = (_id) => {
-    fetch('http://10.0.2.2:3000/Cart/checkVoucher', {
+    fetch(API_General+'/Cart/checkVoucher', {
         method : 'POST',
         headers : {
             'Content-Type' : 'application/json',

@@ -1,6 +1,6 @@
 import { Alert, ToastAndroid } from "react-native";
-import { idAccount } from "../View/Login";
-const api = 'http://10.0.2.2:3000/account_user';
+import {API_General} from './API_General';
+const api = API_Generral+'/account_user';
 export const getAccount = (username, password) => {
     fetch(api+'/get',{
         method : 'POST',

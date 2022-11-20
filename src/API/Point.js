@@ -1,6 +1,6 @@
 import { Alert } from "react-native";
-
-const API = 'http://10.0.2.2:3000/Point';
+import {API_General} from './API_General'
+const API = API_General+'/Point';
 export const onHandlerAddPoint = (id_Account, point,_id)=>{
     fetch(API+'/AddPoint',{
         method : 'POST',

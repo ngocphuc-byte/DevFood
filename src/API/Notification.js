@@ -1,6 +1,6 @@
 import { UpdateOrder } from "../../Redux/Actions/OrderAction";
-
-var API = 'http://10.0.2.2:3000/News';
+import {API_General} from './API_General'
+var API = API_General+'/News';
 
 export const onHandlerGetNews = (setData) => {
     fetch(API+'/get')
@@ -11,7 +11,7 @@ export const onHandlerGetNews = (setData) => {
         .catch(err=>console.log(err))
 }
 export const getNotification = (id_Account, dispatch, AddOrder, setOrder) => {
-    fetch('http://10.0.2.2:3000/Payment/get',{
+    fetch(API_General+'/Payment/get',{
         method : 'POST',
         headers : {
             'Content-Type': 'application/json',
@@ -29,7 +29,7 @@ export const getNotification = (id_Account, dispatch, AddOrder, setOrder) => {
     .catch(err=>console.log(err))
 }
 export const updateState = (_id, dispatch) => {
-    fetch('http://10.0.2.2:3000/Payment/updateState',{
+    fetch(API_General+'/Payment/updateState',{
         method : 'POST',
         headers : {
             'Content-Type' : 'application/json',

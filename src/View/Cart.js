@@ -18,6 +18,7 @@ import { getCart, getFood, getTotal, getIdVoucher, onHandlerUpdateQuantityDown, 
 import { Card, Modal } from "react-native-paper";
 import { UpdateCart, RemoveItem } from "../../Redux/Actions/CartAction";
 import  {Swipeable, GestureHandlerRootView}  from "react-native-gesture-handler";
+import {API_General} from '../API/API_General'
 const Header = ({navigation}) => {
     const onHandlerBack = () => {
         navigation.goBack();
@@ -145,7 +146,7 @@ const NameVoucher = ({item, setDataVoucher,setApply ,setVisible, total, onHandle
     },[])
     const onHandlerSaveVoucher = () => {
         
-        fetch('http://10.0.2.2:3000/Cart/checkVoucher', {
+        fetch(API_General+'/Cart/checkVoucher', {
             method : 'POST',
             headers : {
                 'Content-Type' : 'application/json',
@@ -242,7 +243,7 @@ const Body = ({navigation}) => {
                 }
             ])
         } else {
-            fetch('http://10.0.2.2:3000/Cart/checkVoucher', {
+            fetch(API_General+'/Cart/checkVoucher', {
         method : 'POST',
         headers : {
             'Content-Type' : 'application/json',

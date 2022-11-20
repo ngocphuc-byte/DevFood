@@ -1,6 +1,6 @@
 import { Alert, ToastAndroid } from "react-native"
-
-let API = 'http://10.0.2.2:3000/voucher'
+import {API_General} from './API_General'
+let API = API_General+'/voucher'
 export const onHandlerGet = (setData) => {
     fetch(API+'/get')
         .then(res=>res.json())

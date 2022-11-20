@@ -1,4 +1,7 @@
-const API = 'http://10.0.2.2:3000/food'
+import { API_General } from "./API_General"
+
+
+const API = API_General+'/food'
 export const onHandlerFood = (setData) => {
     fetch(API+'/getfood')
         .then(res=>res.json())

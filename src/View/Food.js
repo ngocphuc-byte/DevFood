@@ -19,6 +19,7 @@ import { useSelector, useDispatch } from 'react-redux'
 import { AddCart, UpdateCart } from "../../Redux/Actions/CartAction";
 import { getOrder } from "../API/Order";
 import { AddOrder } from "../../Redux/Actions/OrderAction";
+import {API_General} from '../API/API_General'
 const renderItem = (item, setImage, setName, setPrice, name, setID) => {
     const onHandlerPress = () => {
         setID(item._id);
@@ -53,7 +54,7 @@ export default Food = () => {
     const [data, setData] = useState([]);
     const Account  = useSelector(state=>state.Login)
     const dispatch = useDispatch();
-    const API = 'http://10.0.2.2:3000/Cart'
+    const API = API_General+'/Cart'
     const onHandlerAddFood = () => {
         if(name.length == 0) {
             Alert.alert('Warning','Vui lòng nhấn vào món ăn để thêm vào giỏ hàng',[

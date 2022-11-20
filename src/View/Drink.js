@@ -17,6 +17,7 @@ import { white, yellow } from "../Style/colors";
 import { onHandlerCheckCart, updateTotal } from "../API/Cart";
 import { useSelector, useDispatch } from "react-redux";
 import { AddCart, UpdateCart } from "../../Redux/Actions/CartAction";
+import {API_General} from '../API/API_General'
 const renderItem = (item,setImage, setName, setPrice ,name, setID) => {
     const onHandlerPress = () => {
         setID(item._id)
@@ -51,7 +52,7 @@ export default Drink = () => {
     const [data, setData] = useState([]);
     const dispatch = useDispatch();
     const Account = useSelector(state=>state.Login)
-    const API = 'http://10.0.2.2:3000/Cart'
+    const API = API_General+'/Cart'
     const onHandlerAddDrink = () => {
         if(name.length == 0) {
             Alert.alert('Warning','Vui lòng nhấn vào nước uống để thêm vào giỏ hàng',[

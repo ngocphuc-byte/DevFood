@@ -1,4 +1,5 @@
-const API = 'http://10.0.2.2:3000/OrderDetail'
+import {API_General} from './API_General'
+const API = API_General+'/OrderDetail'
 export const getCart = (id_Cart, setCart) => {
     fetch(API+'/getCart',{
         method : 'POST',

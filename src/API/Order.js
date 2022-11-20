@@ -1,4 +1,6 @@
-const API = 'http://10.0.2.2:3000/Payment';
+import {API_General} from './API_General'
+const API = API_General+'/Payment';
+
 export const getOrder = (id_Account, dispatch, AddOrder) => {
     fetch(API+'/get',{
         method : 'POST',

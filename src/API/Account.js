@@ -1,7 +1,7 @@
 import { Alert } from "react-native"
-
+import { API_General } from "./API_General"
 export const UpdateAccount = (idAccount,fullname, address, phone, avatar, latitude, longtitude) => {
-    fetch('http://10.0.2.2:3000/account_user/update',{
+    fetch(API_General+'/account_user/update',{
         method : 'POST',
         headers : {
             'Content-Type' : 'application/json'
