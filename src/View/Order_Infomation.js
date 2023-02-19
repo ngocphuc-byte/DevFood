@@ -74,7 +74,7 @@ const Body = ({item, voucher}) => {
             <View style={styles.containerState}>
                 <View style={styles.containerDot}>
                     {
-                        item.order_Status == 'Đang chuẩn bị' || item.order_Status == 'Đợi duyệt' ?
+                        item.order_Status == 'Đã duyệt' || item.order_Status == 'Đang chuẩn bị' ?
                         <View style={{justifyContent : 'center', alignItems : 'center'}}>
                             <Text style={[styles.dot,{color : orange, fontSize : 32}]}>◉</Text>
                             <Text style={[styles.textState,{fontWeight : 'bold', fontSize : 16, color : black}]}>Đã đặt</Text>
@@ -87,7 +87,7 @@ const Body = ({item, voucher}) => {
                     }
                     <Text>--------------------</Text>
                     {  
-                        item.order_Status == 'Món ăn đã có' ?
+                        item.order_Status == 'Đang giao' ?
                         <View style={{justifyContent : 'center', alignItems : 'center'}}>
                             <Text style={[styles.dot,{color : orange, fontSize : 32}]}>◉</Text>
                             <Text style={[styles.textState,{fontWeight : 'bold', fontSize : 16, color : black}]}>Đã lấy</Text>

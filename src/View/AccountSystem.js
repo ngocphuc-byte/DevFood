@@ -57,8 +57,8 @@ const Body =() =>{
         .then(data=>{
             // setAvatar(data.secure_url);
             console.log(data.secure_url);
-            UpdateAccount(account.idAccount,fullname, address, phone, data.secure_url, latitude, longtitude);
-            dispatch(AccountLogin(account.idAccount, fullname, address, phone, avatar,latitude, longtitude))
+            UpdateAccount(account.idAccount,fullname, address, phone, data.secure_url,account.point, latitude, longtitude);
+            dispatch(AccountLogin(account.idAccount, fullname, address, phone, avatar,account.point,latitude, longtitude))
         }).catch(err=>console.log(err))
     }
     const onHandlerEditAvatar = () => {
@@ -93,8 +93,8 @@ const Body =() =>{
             };
             uploadCloudinary(source);
         } else {
-            UpdateAccount(account.idAccount,fullname, address, phone, avatar, latitude, longtitude);
-            dispatch(AccountLogin(account.idAccount, fullname, address, phone, avatar, latitude, longtitude))
+            UpdateAccount(account.idAccount,fullname, address, phone, avatar,account.point, latitude, longtitude);
+            dispatch(AccountLogin(account.idAccount, fullname, address, phone, avatar,account.point, latitude, longtitude))
         }
         
     }
@@ -106,6 +106,15 @@ const Body =() =>{
             console.log(location);
             setLatitude(location.latitude);
             setLongtitude(location.longitude);
+            fetch('https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=10.8236&longitude=106.6958&localityLanguage=vn')
+                .then(res=>res.json())
+                .then(res=>{
+                    const Country = res.localityInfo.administrative[0].name;
+                    const City = res.localityInfo.administrative[2].name;
+                    const District = res.localityInfo.administrative[3].name;
+                    const Ward = res.localityInfo.administrative[4].name;
+                    setAddress(`${Ward}, ${District}, ${City}, ${Country}`)
+                })
         })
         .catch(error => {
             const { code, message } = error;
@@ -152,6 +161,7 @@ const Body =() =>{
                             <TextInput mode="outlined"
                                         label='Địa chỉ'
                                         value={address}
+                                        disabled
                                         onChangeText={text=>setAddress(text)}
                                         right={<TextInput.Icon icon='map' onPress={onHandlerLocation}/>}/>
                         </View>

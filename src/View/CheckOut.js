@@ -484,6 +484,7 @@ const CheckOut = ({navigation, route}) => {
     })
     useEffect(()=>{
         getTotal2(Account.idAccount , setTotal, apply, setSum);
+        console.log(dataVoucher)
     },[])
     return(
         <View style={styles.container}>

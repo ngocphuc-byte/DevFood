@@ -44,6 +44,7 @@ app.post('/account_user/insert', (req,res) => {
     Account.save()
     res.json(Account);
 })
+
 app.post('/account_user/get', async (req, res) => {
     const account_user = await Account_User.findOne({
         username : req.body.username,
@@ -115,7 +116,7 @@ app.post('/voucher/insert', async (req, res)=>{
         discount : req.body.discount,
         minprice : req.body.minprice,
         special : true,
-        point : 20,
+        point : 90,
     })
     voucher.save()
     res.json(voucher);
